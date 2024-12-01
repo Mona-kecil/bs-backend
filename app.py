@@ -52,7 +52,6 @@ async def get_overdue_payments():
 
 @app.get("/api/v1/dashboard") # Buat tampilin data dashboard
 async def get_dashboard():
-    """Fetch aggregated overview of the parking system."""
     vehicles_count = supabase.table("vehicles").select("count", count="exact").execute()
     transactions_count = supabase.table("transactions").select("count", count="exact").execute()
     overdue_count = supabase.table("transactions").select("count", count="exact").eq("payment_status", "paid").is_("exit_time", None).execute()

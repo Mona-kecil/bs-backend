@@ -49,7 +49,7 @@ async def get_transactions(
     @return: All transactions from offset to limit
     """
     # TODO: Implement pagination
-    response = supabase_service.get_transactions()
+    response = supabase_service.fetch_table_data("transactions")
     return response.data
 
 
@@ -64,7 +64,7 @@ async def get_transaction_by_id(
 
     @return: Transaction with given ID
     """
-    response = supabase_service.get_transaction_by_id(id)
+    response = supabase_service.fetch_table_data("transactions", {"id": id})
     return response.data
 
 

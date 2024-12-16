@@ -116,50 +116,23 @@ def update_session(
     try:
         with get_connection() as conn:
             cursor = conn.cursor()
-
             cursor.execute('''
             update parking_sessions
-            set exit_time = ?
+            set exit_time = ?, deleted_at = ?
             where license_plate = ?
-            ''', (data.exit_time.isoformat(), license_plate))
+            ''', (
+                data.exit_time.isoformat(),
+                datetime.now().isoformat(),
+                license_plate)
+            )
             conn.commit()
-
         return {
             'message': 'success',
             'license_plate': license_plate,
             'exit_time': data.exit_time
         }
-
     except Exception as e:
         raise HTTPException(
             status_code=400,
             detail=f'Failed to update: {str(e)}'
-        )
-
-
-@router.delete('/sessions/{license_plate}')
-def delete_session(
-        license_plate: Annotated[str | None, Path(
-            title="Vehicle's license plate"
-        )],
-):
-    try:
-        with get_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute('''
-            update parking_sessions
-            set deleted_at = ?
-            where license_plate = ?
-            ''', (datetime.now().isoformat(), license_plate))
-            conn.commit()
-
-            return {
-                'message': 'success',
-                'license_plate': license_plate,
-                'deleted_at': datetime.now()
-            }
-    except Exception as e:
-        raise HTTPException(
-            status_code=400,
-            detail=f'Failed to delete: {str(e)}'
         )

@@ -34,13 +34,28 @@ def init_db():
         CREATE TABLE IF NOT EXISTS payments (
             id UUID PRIMARY KEY,
             parking_session_id UUID NOT NULL REFERENCES parking_sessions(id),
-            payment_status VARCHAR NOT NULL DEFAULT 'unpaid',
             payment_method VARCHAR NOT NULL DEFAULT 'none',
             amount INTEGER NOT NULL,
             payment_time TIMESTAMP,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             deleted_at TIMESTAMP DEFAULT NULL
         )
+        """)
+
+        cursor.execute("""
+        CREATE TRIGGER enforce_payment_before_exit
+        BEFORE UPDATE ON parking_sessions
+        WHEN NEW.exit_time IS NOT NULL OR NEW.deleted_at IS NOT NULL
+        BEGIN
+            SELECT CASE
+                WHEN NOT EXISTS (
+                    SELECT 1
+                    FROM payments
+                    WHERE payments.parking_session_id = NEW.id
+                )
+                THEN RAISE(FAIL, 'Cannot close session: No payment found')
+            END;
+        END;
         """)
 
         cursor.execute("""

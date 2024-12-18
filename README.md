@@ -10,13 +10,8 @@ This is the backend repository for project **BS**.
 
 ## Installation
 
-### Using `uv`
-If you have `uv` installed, you can quickly set up the project dependencies by running:
-```bash
-uv install
-```
-### Without uv
-If you’re not using uv, you can install dependencies using pip:
+### Create `venv`
+### Install dependency
 ```bash
 pip install -r requirements.txt
 ```
